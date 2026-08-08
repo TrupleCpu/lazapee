@@ -71,7 +71,11 @@ const MobileNavBar = () => {
               className="p-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-gray-100 transition-colors"
               aria-label="Toggle Menu"
             >
-              {!openMenu ? <Menu className="w-6 h-6" /> : <X className="w-6 h-6" />}
+              {!openMenu ? (
+                <Menu className="w-6 h-6" />
+              ) : (
+                <X className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -79,7 +83,11 @@ const MobileNavBar = () => {
         {openMenu && (
           <div className="pt-4 pb-2 border-t border-gray-100 mt-3 animate-in slide-in-from-top-2 duration-200">
             <nav className="flex flex-col space-y-2">
-              <NavLink to="/" onClick={closeMenu} className={getMobileNavLinkClass}>
+              <NavLink
+                to="/"
+                onClick={closeMenu}
+                className={getMobileNavLinkClass}
+              >
                 Home
               </NavLink>
               <NavLink
