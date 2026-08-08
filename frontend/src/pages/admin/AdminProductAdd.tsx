@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ImagePlus, Info, X } from "lucide-react";
+import { ImagePlus, Info, X, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 import { categoriesApi, productsApi } from "../../lib/endpoints";
 import { useFetch } from "../../hooks/useFetch";
@@ -51,10 +51,18 @@ const STOCK_TYPE_OPTIONS: {
   },
 ];
 
+// Map the human-readable stock status to the values the products table
+// allows (enforced by products_stock_status_check in Supabase).
+const STOCK_STATUS_BY_TYPE: Record<StockType, string> = {
+  inStock: "active",
+  lowStock: "active",
+  outOfStock: "out_of_stock",
+};
+
 const AdminProductAdd = () => {
   const navigate = useNavigate();
   const { data: categoriesData } = useFetch(categoriesApi.list);
-  const { isPending, run } = useAsyncAction();
+  const { isPending, error, run } = useAsyncAction();
 
   const categories = useMemo(() => categoriesData ?? [], [categoriesData]);
 
@@ -69,7 +77,7 @@ const AdminProductAdd = () => {
     description: "",
     stock_type: "outOfStock",
     in_stock: false,
-    stock_status: "Out of Stock",
+    stock_status: "out_of_stock",
     imageFiles: [],
   });
 
@@ -95,15 +103,15 @@ const AdminProductAdd = () => {
         const qty = parseInt(value, 10) || 0;
         if (qty <= 0) {
           updated.stock_type = "outOfStock";
-          updated.stock_status = "Out of Stock";
+          updated.stock_status = STOCK_STATUS_BY_TYPE.outOfStock;
           updated.in_stock = false;
         } else if (qty <= 5) {
           updated.stock_type = "lowStock";
-          updated.stock_status = "Low Stock";
+          updated.stock_status = STOCK_STATUS_BY_TYPE.lowStock;
           updated.in_stock = true;
         } else {
           updated.stock_type = "inStock";
-          updated.stock_status = "In Stock";
+          updated.stock_status = STOCK_STATUS_BY_TYPE.inStock;
           updated.in_stock = true;
         }
       }
@@ -113,21 +121,22 @@ const AdminProductAdd = () => {
   };
 
   const handleStockTypeChange = (stock_type: StockType) => {
-    let stock_status = "In Stock";
+    let stock_status = STOCK_STATUS_BY_TYPE.inStock;
     let in_stock = true;
     let quantity = formData.quantity;
 
     if (stock_type === "lowStock") {
-      stock_status = "Low Stock";
+      stock_status = STOCK_STATUS_BY_TYPE.lowStock;
       in_stock = true;
       if (parseInt(quantity, 10) <= 0 || parseInt(quantity, 10) > 5) {
         quantity = "5";
       }
     } else if (stock_type === "outOfStock") {
-      stock_status = "Out of Stock";
+      stock_status = STOCK_STATUS_BY_TYPE.outOfStock;
       in_stock = false;
       quantity = "0";
     } else if (stock_type === "inStock") {
+      stock_status = STOCK_STATUS_BY_TYPE.inStock;
       if (parseInt(quantity, 10) <= 5) {
         quantity = "10";
       }
@@ -215,6 +224,15 @@ const AdminProductAdd = () => {
             </Button>
           </div>
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-rose-50/60 border border-rose-200/80 rounded-2xl flex items-start space-x-2.5">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="text-[11px] font-semibold text-rose-700 leading-relaxed">
+              {error.message}
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* LEFT COLUMN */}

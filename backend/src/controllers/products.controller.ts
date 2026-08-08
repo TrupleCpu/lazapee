@@ -88,7 +88,14 @@ export async function createProduct(req: Request, res: Response) {
     });
   } catch (error) {
     console.error("Error creating product:", error);
-    res.status(500).json({ message: "Failed to create product" });
+    const detail =
+      error instanceof Error
+        ? error.message
+        : JSON.stringify(error, Object.getOwnPropertyNames(error));
+    res.status(500).json({
+      message: "Failed to create product",
+      error: detail,
+    });
   }
 }
 
@@ -156,11 +163,14 @@ export async function updateProduct(req: Request, res: Response) {
     );
     res.status(200).json({
       message: "Product updated successfully",
-      data: updateProduct,
+      data: updatedProduct,
     });
   } catch (error) {
     console.error("Error updating product:", error);
-    res.status(500).json({ message: "Failed to update product" });
+    res.status(500).json({
+      message: "Failed to update product",
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 

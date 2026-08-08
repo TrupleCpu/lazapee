@@ -7,7 +7,11 @@
  * - Is shared by the local dev server (index.ts) and the Vercel serverless handler.
  */
 
-import express, { type Request, type Response } from "express";
+import express, {
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
@@ -50,5 +54,29 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/customers", customerRouters);
 app.use("/api/categories", categoriesRouters);
 app.use("/api/dashboard", authenticate, dashboardRoutes);
+
+/**
+ * Centralized error handler.
+ * Catches multer (file upload) and any other errors so clients get a
+ * useful JSON response instead of an opaque Express/HTML stack trace.
+ */
+app.use(
+  (err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error("Unhandled error:", err);
+
+    const message =
+      err instanceof Error ? err.message : "Internal Server Error";
+
+    if (
+      (err as { code?: string }).code === "LIMIT_FILE_SIZE" ||
+      (err as { code?: string }).code === "LIMIT_UNEXPECTED_FILE" ||
+      (err as { code?: string }).code === "LIMIT_FILE_COUNT"
+    ) {
+      return res.status(400).json({ message, error: message });
+    }
+
+    res.status(500).json({ message, error: message });
+  },
+);
 
 export default app;
