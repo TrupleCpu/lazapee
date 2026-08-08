@@ -7,8 +7,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   ArrowUpRight,
-  Eye,
-  MoreVertical,
 } from "lucide-react";
 import {
   BarChart,
@@ -35,6 +33,7 @@ import {
   TableSkeleton,
 } from "../../components/ui";
 import Skeleton from "react-loading-skeleton";
+import { NavLink, useNavigate } from "react-router";
 
 const statusStyles: Record<string, string> = {
   Pending: "bg-amber-50 text-amber-600",
@@ -46,15 +45,18 @@ const statusStyles: Record<string, string> = {
 };
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [chartTimeframe, setChartTimeframe] = useState<"weekly" | "monthly">(
     "monthly",
   );
   const [sales, setSales] = useState<SalesPoint[]>([]);
 
-  const { data: statsData, loading: statsLoading } =
-    useFetch<DashboardStats>(dashboardApi.stats);
-  const { data: recentOrdersData, loading: recentLoading } =
-    useFetch<RecentOrder[]>(dashboardApi.recentOrders);
+  const { data: statsData, loading: statsLoading } = useFetch<DashboardStats>(
+    dashboardApi.stats,
+  );
+  const { data: recentOrdersData, loading: recentLoading } = useFetch<
+    RecentOrder[]
+  >(dashboardApi.recentOrders);
   const { data: inventoryData, loading: inventoryLoading } =
     useFetch<InventoryAlert>(dashboardApi.inventory);
 
@@ -109,6 +111,7 @@ const AdminDashboard = () => {
         ? `Order ${order.order_number} completed`
         : `New order ${order.order_number} placed`,
     time: timeAgo(order.created_at),
+    orderNumber: order.order_number,
   }));
 
   const columns: Column<RecentOrder>[] = [
@@ -163,27 +166,6 @@ const AdminDashboard = () => {
         >
           {order.status}
         </span>
-      ),
-    },
-    {
-      key: "actions",
-      header: "Actions",
-      align: "right",
-      render: () => (
-        <div className="flex items-center justify-end space-x-2">
-          <button
-            className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-            title="View order details"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-          <button
-            className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-            title="More options"
-          >
-            <MoreVertical className="w-4 h-4" />
-          </button>
-        </div>
       ),
     },
   ];
@@ -409,7 +391,10 @@ const AdminDashboard = () => {
               product{inventoryCount === 1 ? "" : "s"} running low on stock.
               Restock suggested soon.
             </p>
-            <button className="bg-[#004d40] hover:bg-emerald-950 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-colors cursor-pointer">
+            <button
+              onClick={() => navigate("/admin/products")}
+              className="bg-[#004d40] hover:bg-emerald-950 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+            >
               Review Stock
             </button>
           </div>
@@ -429,14 +414,22 @@ const AdminDashboard = () => {
                 <p className="text-xs text-gray-400">No recent activity.</p>
               ) : (
                 activities.map((activity, index) => (
-                  <div key={index} className="flex items-start space-x-3">
+                  <div
+                    key={index}
+                    onClick={() =>
+                      navigate(
+                        `/admin/orders/details/${activity.orderNumber}`,
+                      )
+                    }
+                    className="flex items-start space-x-3 cursor-pointer group"
+                  >
                     <div
                       className={`p-2 rounded-xl shrink-0 ${activity.iconBg}`}
                     >
                       {activity.icon}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-gray-800">
+                      <p className="text-xs font-bold text-gray-800 group-hover:text-primary transition-colors">
                         {activity.text}
                       </p>
                       <span className="text-[10px] text-gray-400">
@@ -460,13 +453,13 @@ const AdminDashboard = () => {
               Overview of latest transactions across all channels
             </p>
           </div>
-          <a
-            href="#orders"
+          <NavLink
+            to="/admin/orders"
             className="inline-flex items-center space-x-1 text-xs font-bold text-[#1d4ed8] hover:underline"
           >
             <span>View All</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
+          </NavLink>
         </div>
 
         {loading ? (
@@ -476,6 +469,9 @@ const AdminDashboard = () => {
             columns={columns}
             rows={recentOrders}
             getRowKey={(row) => row.id}
+            onRowClick={(order) =>
+              navigate(`/admin/orders/details/${order.order_number}`)
+            }
             emptyState={
               <EmptyState icon={ShoppingCart} title="No orders yet" />
             }

@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 import {
-  Filter,
-  Download,
   Users,
   UserCheck,
   ShoppingBag,
@@ -190,17 +188,6 @@ const AdminCustomers = () => {
       <div className="bg-white rounded-3xl border border-gray-200/60 shadow-2xs overflow-hidden">
         {/* Table Action Controls */}
         <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-3 w-full sm:w-auto">
-            <button className="inline-flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-xs px-4 py-2.5 rounded-xl border border-gray-200/60 transition-colors cursor-pointer">
-              <Filter className="w-3.5 h-3.5 text-gray-500" />
-              <span>Filter</span>
-            </button>
-            <button className="inline-flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-xs px-4 py-2.5 rounded-xl border border-gray-200/60 transition-colors cursor-pointer">
-              <Download className="w-3.5 h-3.5 text-gray-500" />
-              <span>Export</span>
-            </button>
-          </div>
-
           <div className="text-xs text-gray-500 font-medium">
             Showing{" "}
             <span className="font-bold text-gray-800">

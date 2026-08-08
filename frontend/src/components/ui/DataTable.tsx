@@ -15,6 +15,7 @@ interface DataTableProps<T> {
   getRowKey: (row: T) => string | number;
   emptyState?: ReactNode;
   className?: string;
+  onRowClick?: (row: T) => void;
 }
 
 const thBase =
@@ -27,6 +28,7 @@ const DataTable = <T,>({
   getRowKey,
   emptyState,
   className = "",
+  onRowClick,
 }: DataTableProps<T>) => {
   return (
     <div className={`bg-white rounded-3xl border border-gray-200/60 shadow-2xs overflow-hidden ${className}`}>
@@ -61,7 +63,12 @@ const DataTable = <T,>({
               rows.map((row) => (
                 <tr
                   key={getRowKey(row)}
-                  className="hover:bg-gray-50/80 transition-colors"
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={`transition-colors ${
+                    onRowClick
+                      ? "hover:bg-gray-50/80 cursor-pointer"
+                      : "hover:bg-gray-50/80"
+                  }`}
                 >
                   {columns.map((column) => (
                     <td
