@@ -9,10 +9,10 @@ export const formatCurrency = (
 ): string => {
   const num = typeof value === "number" ? value : parsePrice(value);
   if (Number.isNaN(num)) return "$0.00";
-  return num.toLocaleString("en-US", {
+  return `$${num.toLocaleString("en-US", {
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
-  });
+  })}`;
 };
 
 export const formatPriceShort = (value: number | string | undefined): string => {
