@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Plus, Search, Pencil, Trash2, ImagePlus, X } from "lucide-react";
 import { useNavigate } from "react-router";
-import { productsApi } from "../../lib/endpoints";
+import { categoriesApi, productsApi } from "../../lib/endpoints";
 import { useFetch } from "../../hooks/useFetch";
 import { useAsyncAction } from "../../hooks/useAsyncAction";
 import { normalizeImageUrl } from "../../lib/images";
@@ -46,11 +46,13 @@ interface EditFormData {
   price: number;
   quantity: number;
   stock_status: string;
+  category_id: string;
 }
 
 const AdminProducts = () => {
   const navigate = useNavigate();
   const { data, loading, refetch } = useFetch(productsApi.list);
+  const { data: categoriesData } = useFetch(categoriesApi.list);
   const { isPending: isDeleting, run: runDelete } = useAsyncAction();
   const { isPending: isSaving, run: runSave } = useAsyncAction();
 
@@ -70,6 +72,7 @@ const AdminProducts = () => {
     price: 0,
     quantity: 0,
     stock_status: "active",
+    category_id: "",
   });
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -118,6 +121,7 @@ const AdminProducts = () => {
       price: Number(product.price) || 0,
       quantity: product.quantity ?? 0,
       stock_status: product.stock_status || "active",
+      category_id: String(product.categories?.id ?? product.category_id ?? ""),
     });
     setExistingImages((product.images || []).map(getImageUrl));
     setNewImageFiles([]);
@@ -173,6 +177,7 @@ const AdminProducts = () => {
     bodyData.append("price", editFormData.price.toString());
     bodyData.append("quantity", editFormData.quantity.toString());
     bodyData.append("stock_status", editFormData.stock_status);
+    bodyData.append("category_id", editFormData.category_id);
     existingImages.forEach((url) => bodyData.append("existingImages", url));
     newImageFiles.forEach((file) => bodyData.append("imageFiles", file));
 
@@ -424,6 +429,24 @@ const AdminProducts = () => {
               }
             />
           </div>
+
+          <Select
+            label="Category"
+            value={editFormData.category_id}
+            onChange={(e) =>
+              setEditFormData({
+                ...editFormData,
+                category_id: e.target.value,
+              })
+            }
+            options={[
+              { value: "", label: "Select Category" },
+              ...(categoriesData ?? []).map((cat) => ({
+                value: String(cat.id),
+                label: cat.title,
+              })),
+            ]}
+          />
 
           <Select
             label="Stock Status"

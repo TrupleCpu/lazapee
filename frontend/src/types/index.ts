@@ -9,6 +9,7 @@ export interface Product {
   subtitle?: string | null;
   image?: string | null;
   images?: string[] | null;
+  category_id?: string | number;
   category?: string | null;
   categories?: { id?: string | number; title: string; slug?: string } | null;
   in_stock?: boolean;
