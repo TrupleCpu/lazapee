@@ -11,8 +11,8 @@ Lazapee is a responsive full-stack e-commerce platform built for the **CubeTech 
 | Link | URL |
 | --- | --- |
 | GitHub Repository | `https://github.com/TrupleCpu/Lazapee` |
-| Customer Website | [Add live URL] |
-| Admin Dashboard | [Add live URL] |
+| Customer Website |`https://lazapee-vfm6.vercel.app/`  |
+| Admin Dashboard | `https://lazapee-vfm6.vercel.app/admin/login`  |
 
 ## 🔑 Admin Credentials
 
