@@ -29,7 +29,7 @@ Admin login page: `/admin/login` (e.g. `http://localhost:5173/admin/login` local
 | Layer | Technologies |
 | --- | --- |
 | Frontend | React 19, TypeScript, Vite 8, Tailwind CSS 4, React Router 8, Recharts, react-loading-skeleton, lucide-react |
-| Backend | Node.js, Express 5, Supabase (Postgres + auth), Appwrite Storage, JWT (httpOnly cookie), Multer, Zod, bcryptjs |
+| Backend | Node.js, Express 5, Supabase (Postgres + auth), Appwrite Storage, JWT (httpOnly cookie), Multer, bcryptjs |
 | Deployment | Vercel (serverless, single project) |
 
 ---
