@@ -1,6 +1,6 @@
 const Header = () => {
   return (
-    <header className="flex justify-end items-center mb-8">
+    <header className="flex justify-end items-center mb-8 print:hidden">
       <div className="flex items-center space-x-3">
         <div className="flex items-center space-x-2 pl-2">
           <span className="text-xs font-bold text-gray-700 hidden sm:inline-block">

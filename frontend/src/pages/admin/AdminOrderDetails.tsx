@@ -22,6 +22,10 @@ import { ordersApi } from "../../lib/endpoints";
 import { useAsyncAction } from "../../hooks/useAsyncAction";
 import { formatCurrency } from "../../lib/format";
 import { Button, ConfirmDialog } from "../../components/ui";
+import OrderInvoice, {
+  type InvoiceOrder,
+} from "../../components/admin/OrderInvoice";
+import { generatePdfInvoice } from "../../lib/pdf";
 import Skeleton from "react-loading-skeleton";
 
 interface LocalOrderItem {
@@ -47,7 +51,7 @@ interface OrderDetail {
   shipping: number;
   tax: number;
   total: number;
-  notes?: { notes: string };
+  notes?: { notes?: string } | string | null;
   order_items: LocalOrderItem[];
 }
 
@@ -193,6 +197,15 @@ const AdminOrderDetails = () => {
     navigate("/admin/orders");
   };
 
+  const handlePrintInvoice = () => {
+    window.print();
+  };
+
+  const handleDownloadPdf = () => {
+    if (!orderDetail) return;
+    generatePdfInvoice(orderDetail as unknown as InvoiceOrder);
+  };
+
   if (loading) {
     return (
       <div className="bg-[#f3f6fc] min-h-screen py-8">
@@ -245,17 +258,18 @@ const AdminOrderDetails = () => {
 
   return (
     <>
-      {/* Breadcrumb Navigation */}
-      <div className="flex items-center space-x-2 text-xs font-semibold text-gray-500 mb-4">
-        <span
-          onClick={() => navigate("/admin/orders")}
-          className="hover:text-gray-800 transition-colors cursor-pointer"
-        >
-          Orders
-        </span>
-        <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-        <span className="text-primary font-bold">Order Details</span>
-      </div>
+      <div className="print:hidden">
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center space-x-2 text-xs font-semibold text-gray-500 mb-4">
+          <span
+            onClick={() => navigate("/admin/orders")}
+            className="hover:text-gray-800 transition-colors cursor-pointer"
+          >
+            Orders
+          </span>
+          <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+          <span className="text-primary font-bold">Order Details</span>
+        </div>
 
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
@@ -288,11 +302,17 @@ const AdminOrderDetails = () => {
         </div>
 
         <div className="flex items-center space-x-2.5">
-          <button className="inline-flex items-center justify-center space-x-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200/80 font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer">
+          <button
+            onClick={handlePrintInvoice}
+            className="inline-flex items-center justify-center space-x-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200/80 font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer"
+          >
             <Printer className="w-4 h-4 text-gray-500" />
             <span>Print Invoice</span>
           </button>
-          <Button className="px-4 py-2.5 text-xs rounded-xl">
+          <Button
+            onClick={handleDownloadPdf}
+            className="px-4 py-2.5 text-xs rounded-xl"
+          >
             <Download className="w-4 h-4" />
             <span>Download PDF</span>
           </Button>
@@ -414,7 +434,10 @@ const AdminOrderDetails = () => {
               <span>Order Notes</span>
             </h2>
             <div className="p-4 bg-surface rounded-2xl border border-gray-200/60 text-xs text-gray-700 leading-relaxed font-medium">
-              {orderDetail.notes?.notes || "No special instructions provided."}
+              {typeof orderDetail.notes === "string"
+                ? orderDetail.notes
+                : orderDetail.notes?.notes ||
+                  "No special instructions provided."}
             </div>
           </div>
         </div>
@@ -506,6 +529,12 @@ const AdminOrderDetails = () => {
             )}
           </div>
         </div>
+      </div>
+      </div>
+
+      {/* Printable invoice (hidden on screen, shown only when printing) */}
+      <div className="hidden print:block">
+        <OrderInvoice order={orderDetail as unknown as InvoiceOrder} />
       </div>
 
       {/* Delete Confirmation Modal */}

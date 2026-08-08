@@ -139,7 +139,7 @@ const Sidebar = () => {
   return (
     <>
       {/* MOBILE TRIGGER BUTTON (Shown on small screens) */}
-      <div className="md:hidden fixed top-4 left-4 z-40">
+      <div className="md:hidden fixed top-4 left-4 z-40 print:hidden">
         <button
           onClick={toggleSidebar}
           className="p-2.5 bg-white text-gray-700 hover:bg-gray-50 rounded-xl border border-gray-200 shadow-md transition-all flex items-center justify-center"
@@ -151,15 +151,15 @@ const Sidebar = () => {
 
       {/* MOBILE BACKDROP OVERLAY */}
       {isOpen && (
-        <div
-          onClick={closeSidebar}
-          className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 md:hidden transition-opacity"
-        />
+<div
+        onClick={closeSidebar}
+        className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs z-40 md:hidden transition-opacity print:hidden"
+      />
       )}
 
       {/* MOBILE SLIDE-OUT DRAWER */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 w-64 bg-[#f8fafc] z-50 flex flex-col justify-between border-r border-gray-200/80 transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 left-0 bottom-0 w-64 bg-[#f8fafc] z-50 flex flex-col justify-between border-r border-gray-200/80 transform transition-transform duration-300 ease-in-out md:hidden print:hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -167,7 +167,7 @@ const Sidebar = () => {
       </aside>
 
       {/* DESKTOP PERMANENT SIDEBAR */}
-      <aside className="w-64 bg-[#f8fafc] border-r border-gray-200/80 flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0">
+      <aside className="w-64 bg-[#f8fafc] border-r border-gray-200/80 flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0 print:hidden">
         {renderNavContent()}
       </aside>
     </>
